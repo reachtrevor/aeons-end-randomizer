@@ -1,27 +1,28 @@
 extends ./_shell
 
 block Body
+  div#spy_marker
   section.is-showing#create-join
     h2 Create a Room
     p Welcome, you need to create a room to get started
     form#createRoomForm
-      div: input(type="text", name="name", value="trevor")
-      div: input(type="number", name="playerCount" value="2")
+      div: input(type="text", name="name")
+      //- div: input(type="number", name="playerCount" value="2")
       button(type="submit") Create a Room
-      button#dropRoomsBtn Drop all Rooms
+      //- button#dropRoomsBtn Drop all Rooms
 
-    div
-      form#joinRoomForm
-        div: input(type="text", name="name")
-        div: input(type="text", name="room", placeholder="Room ID")
-        button(type="submit") Join Room
-    div
-      span#dropped
+  //-   div
+  //-     form#joinRoomForm
+  //-       div: input(type="text", name="name")
+  //-       div: input(type="text", name="room", placeholder="Room ID")
+  //-       button(type="submit") Join Room
+  //-   div
+  //-     span#dropped
 
-  section#joined-room
-    div
-      h2 Room
-      p Waiting for other players...
+  //- section#joined-room
+  //-   div
+  //-     h2 Room
+      //- p Waiting for other players...
 
     aside
       ul.player-list
@@ -29,63 +30,40 @@ block Body
 block Footer
   script(src="/socket.io/socket.io.js")
   script.
-    var $createRoomForm = $('#createRoomForm')
-    var $dropRoomsBtn = $('#dropRoomsBtn')
-    var $joinRoomForm = $('#joinRoomForm')
-    var $section_create = $('#create-join')
-    var $section_room = $('#joined-room')
+    var socket = io.connect('/')
+    var $form = $('form')
+    var $p = $('p')
+    var $spy_marker = $('#spy_marker')
 
-    // Start the room up
-    $createRoomForm.on('submit', function(e) {
-      e.preventDefault();
-      $.ajax({
-        url: '/start',
-        method: 'POST',
-        data: $createRoomForm.serialize()
-      }).done(startGame);
+    // When connected
+    socket.on('connect', function() {
+      console.log('connected')
     })
 
-    $joinRoomForm.on('submit', function(e) {
-      var $input = $(this).find('input[name="room"]');
-
-      e.preventDefault();
-      $.ajax({
-        url: '/join/' + $input.val(),
-        method: 'POST'
-      }).done(joinGame);
+    // When disconnected
+    socket.on('disconnect', function() {
+      console.log('disconnected')
     })
 
-    // Socket io stuffs
-    function startGame(data) {
+    socket.on('message', function(data) {
+      $p.text(data)
+    })
 
-      // Open socket
-      var socket = io.connect('http://localhost:4200')
-
-      // Wait for connection and then emit the join message with
-      // the room and player ID provided in the API response
-      socket.on('connect', function() {
-        socket.emit('join', { room: data.room, player: data.player })
+    socket.on('move', function(data) {
+      $spy_marker.css({
+        left: (data.x - 2) + 'px',
+        top: (data.y - 2) + 'px'
       })
-    }
-
-    function joinGame(data) {
-
-      // Open socket
-      var socket = io.connect('http://localhost:4200')
-
-      // Wait for connection and then emit the join message with
-      // the room and player ID provided in the API response.
-      socket.on('connect', function() {
-        socket.emit('join', { room: data.room, player: data.player })
-      })
-    }
-
-    socket.on('joined', function(data) {
-      console.log('this person joined...', data)
-      $section_create.removeClass('is-showing')
-      $section_room.addClass('is-showing')
     })
 
-    socket.on('left', function(data) {
-      console.log('this person left...', data)
+    $form.on('submit', function(e) {
+      e.preventDefault()
+      socket.emit('submit', $form.find('input').val())
+    })
+
+    $(document).on('mousemove', function(e) {
+      socket.emit('move', {
+        x: e.pageX,
+        y: e.pageY
+      })
     })
