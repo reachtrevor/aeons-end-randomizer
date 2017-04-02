@@ -83,6 +83,6 @@ app.get('/', function(req, res) {
 
 io.on('connection', handleIO)
 
-server.listen(4200, function() {
+server.listen(process.env.PORT || 4200, function() {
   console.log('server started on 4200')
 })
