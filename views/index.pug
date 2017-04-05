@@ -1,17 +1,48 @@
 extends ./_shell
 
 block Body
-  ul.pages
-    li.chat.page
-      div.chat-area
-        ul.messages
-      input.input-message(placeholder="Type here...")
-    li.login.page
-      div.form
-        h3.title What's your nickname?
-        input.username-input(type="text", maxlength="14")
 
+  //- Page to create a room
+  section.login
+    div.login-content
+      h1.mtn: img(src="/images/aeons-end.png")
+      h2 Create a Room
 
+      label.new-line.align-left
+        | Character
+        select(name="character")
+          option(value="") -- Choose --
+          option(value="liza") Liza
+          option(value="lydia") Lydia
+          option(value="matt") Matt
+          option(value="zargoth") Zargoth
+      label.new-line.align-left
+        span.player-count-label Player Count
+        span.player-count-number 3
+        div.player-count-buttons.mrm
+          i.fa.fa-caret-up
+          i.fa.fa-caret-down
+        input(type="number", name="slots", value="3", hidden)
+      button.mtl(id="create-button", type="submit") Create Room
+
+  //- Manual Join Room flow
+  section.join-room
+    div.login-content.align-center
+      label.new-line
+        | Select Character
+        select(name="join-character")
+          option(value="") -- Choose --
+          option(value="liza") Liza
+          option(value="lydia") Lydia
+          option(value="matt") Matt
+          option(value="zargoth") Zargoth
+
+  //- Actual Room
+  section.room
+    span.info-box room:
+    div.wrapper
+
+  div#notify.notification--error
 block Footer
   script(src="/socket.io/socket.io.js")
-  script(src="main.js")
+  script(src="client-app.js")

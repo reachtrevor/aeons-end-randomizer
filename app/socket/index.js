@@ -1,60 +1,61 @@
+// Rooms
+var _rooms = {};
+
 module.exports = function handleIO(client) {
-  console.log('Client connected')
-  var addedUser = false
+  var io = this;
+  console.log('Client Connected')
 
-  // when the client emits 'new message', this broadcasts it to everyone else
-  client.on('new message', function (data) {
-    // we tell the client to execute 'new message'
-    client.broadcast.emit('new message', {
-      username: client.username,
-      message: data
-    })
-  })
+  // Listen for when someone creates a room
+  client.on('create room', function createRoom(data) {
+    var roomId = 'xwtyv';
+    _rooms[roomId] = {
+      players: [],
+      slots: data.slots
+    };
+    client.emit('room created', { room: roomId });
+  });
 
-  // when the client emits 'add user',
-  client.on('add user', function(username) {
-    if (addedUser) return
+  client.on('join room', function joinRoom(data) {
+    var roomId = data.room;
 
-    // we store the username in the socket session for this client
-    client.username = username
-    numUsers++
-    addedUser = true
-    client.emit('login', {
-      numUsers: numUsers
-    })
-
-    // tell everyone (all clients) that someone new has connected
-    client.broadcast.emit('user joined', {
-      username: client.username,
-      numUsers: numUsers
-    })
-  })
-
-  // when the client emits 'typeing', we let everyone know who's typing
-  client.on('typing', function() {
-    client.broadcast.emit('typing', {
-      username: client.username
-    })
-  })
-
-  // when the client emits 'stop typing', we let everyone know
-  client.on('stop typing', function() {
-    client.broadcast.emit('stop typing', {
-      username: client.username
-    })
-  })
-
-  // when the user disconnects.. let people know and cleanup
-  client.on('disconnect', function() {
-    console.log('Client: ' + client.username + ' diconnected')
-    if (addedUser) {
-      --numUsers
-
-      // let everyone know this client has left
-      client.broadcast.emit('user left', {
-        username: client.username,
-        numUsers: numUsers
-      })
+    if (!_rooms[roomId]) {
+      client.emit('err', 'room ' + roomId + ' does not exist');
+      return;
     }
-  })
+
+    var slots = _rooms[roomId].slots;
+    var players = _rooms[roomId].players;
+
+    // Are there available slots
+    if (players.length < slots) {
+      _rooms[roomId].players.push({
+        name: data.character,
+        player_number: players.length + 1
+      });
+    } else {
+      client.emit('err', 'sorry, room is full');
+      return;
+    }
+
+    // Finally... join the room for real
+    client.join(roomId, function() {
+
+      // Notifiy those in the room that someone joined
+      io.to(roomId).emit('room joined', Object.assign({}, data, {
+        players: players,
+        slots: slots
+      }));
+    });
+  });
+
+  client.on('player turn', function(data) {
+    // data will contain { character: matt }
+    // tell everyone including matt that it's his turn
+    // tell matt specifically that it's his turn with an extra notification
+  });
+
+  client.on('disconnect', function() {
+    // remove player from room by character name
+    // emit that this player has disconnected
+  });
 }

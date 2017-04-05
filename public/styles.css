@@ -7,14 +7,296 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  height: 100%;
+  background: #151414;
+}
+
 body {
+  margin: 0;
+  color: #333;
   font-family: 'Roboto', 'Helvetica', sans-serif;
   font-weight: 300;
   font-size: 14px;
   line-height: 1.2em;
 }
 
+.wrapper {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.row {
+  margin-left: -12px;
+  margin-right: -12px;
+  clear: both;
+}
+
+.row:before,
+.row:after {
+  content: '';
+  display: table;
+  overflow: none;
+  clear: both;
+}
+
+.column {
+  float: left;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 /*
   Custom Styles
   Start styling the app below this line
 */
+
+h1, h2, h3, h4 {
+  font-weight: 400;
+  color: #555;
+}
+
+label {
+  font-weight: 500;
+}
+
+input {
+  display: inline-block;
+  padding: 10px 12px;
+  margin: 5px 0 15px;
+  border: 1px solid #999;
+  border-radius: 3px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #333;
+}
+
+select {
+  padding: 10px 12px;
+  color: white;
+}
+
+select:focus {
+  outline: none;
+}
+
+img {
+  border: 0;
+  max-width: 100%;
+}
+
+button,
+[class*="btn"] {
+  display: inline-block;
+  padding: 10px 12px;
+  background: #427198;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  line-height: 1em;
+}
+
+button:hover,
+button:focus,
+[class*="btn"]:hover,
+[class*="btn"]:focus {
+  background: #6d90ad;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn--tiny {
+  padding: 7px;
+  font-size: 12px;
+}
+
+.btn--strip {
+  padding: 0;
+  background: none;
+  color: #427198;
+}
+
+.player-count-label,
+.player-count-number {
+  display: inline-block;
+  position: relative;
+  top: -13px;
+}
+
+.player-count-label {
+  margin-right: 15px;
+}
+
+.player-count-buttons {
+  display: inline-block;
+  height: 35px;
+  position: relative;
+}
+
+.player-count-buttons .fa {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: 20px;
+}
+
+.player-count-buttons .fa-caret-up {
+  top: 0;
+}
+
+/* Helper Classes */
+.align-center {
+  text-align: center;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.new-line {
+  display: block;
+}
+
+.mtn {
+  margin-top: 0 !important;
+}
+
+.mts {
+  margin-top: 5px !important;
+}
+
+.mtm {
+  margin-top: 10px !important;
+}
+
+.mtl {
+  margin-top: 15px !important;
+}
+
+.mll {
+  margin-left: 15px !important;
+}
+
+.mrm {
+  margin-left: 10px !important;
+}
+
+[class*="notification"] {
+  padding: 10px;
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 1000;
+  border-radius: 3px;
+  font-weight: normal;
+  opacity: 0;
+  transform: translate(-50%, -100%);
+  transition: all 300ms ease-in-out;
+}
+
+[class*="notification"].is-showing {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.notification--error {
+  background: #c75832;
+  color: white;
+}
+
+/* Small Screen Media Query */
+@media screen and (max-width: 480px) {
+
+  .wrapper {
+    width: 92%;
+    max-width: 1100px;
+  }
+
+  /* Grids */
+  .small-3,
+  .small-quarter {
+    width: 25%;
+  }
+
+  .small-4,
+  .small-third {
+    width: 33.333333%;
+  }
+
+  .small-6,
+  .small-half {
+    width: 50%;
+  }
+
+  .small-8,
+  .small-two-thirds {
+    width: 66.666666%;
+  }
+
+  .small-9,
+  .small-three-quarters {
+    width: 75%;
+  }
+
+  .small-12 {
+    width: 100%;
+  }
+
+  [class*="notification"] {
+    width: calc(100% - 10px);
+  }
+
+  .login,
+  .room,
+  .join-room {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #151414;
+    transition: opacity 300ms ease-in-out;
+  }
+
+  .login.is-showing,
+  .room.is-showing,
+  .join-room.is-showing {
+    opacity: 1;
+    z-index: 999;
+  }
+
+  .login {
+    opacity: 0;
+    z-index: -999;
+  }
+
+  .room,
+  .join-room {
+    opacity: 0;
+    z-index: 1;
+  }
+
+  .login-content {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .info-box {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-weight: normal;
+  }
+}
+
+/*@media screen and (min-width: 481px) and (max-width: 720px) {}*/
+/*@media screen and (max-width: 480px) {}*/
