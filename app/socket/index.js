@@ -3,7 +3,7 @@ var _rooms = {};
 
 module.exports = function handleIO(client) {
   var io = this;
-  console.log('Client Connected')
+  console.log('Client Connected');
 
   // Listen for when someone creates a room
   client.on('create room', function createRoom(data) {
@@ -38,24 +38,56 @@ module.exports = function handleIO(client) {
     }
 
     // Finally... join the room for real
+    client.roomId = roomId;
     client.join(roomId, function() {
-
-      // Notifiy those in the room that someone joined
-      io.to(roomId).emit('room joined', Object.assign({}, data, {
+      var room = Object.assign({}, data, {
         players: players,
         slots: slots
-      }));
+      });
+
+      // Notifiy those in the room that someone joined
+      io.to(roomId).emit('update room stats', room);
+      io.to(roomId).emit('room joined', room);
     });
   });
 
-  client.on('player turn', function(data) {
-    // data will contain { character: matt }
-    // tell everyone including matt that it's his turn
-    // tell matt specifically that it's his turn with an extra notification
+  client.on('change player', function(data) {
+
+    // Helps update the card selected for everyone
+    client
+      .to(client.roomId)
+      .broadcast
+      .emit('player turn', data.character);
+
+    // Tell current player it's their turn
+    client.emit('attention', 'It\'s your turn');
   });
 
   client.on('disconnect', function() {
-    // remove player from room by character name
-    // emit that this player has disconnected
+    if (client.roomId) {
+      var room = _rooms[client.roomId];
+      var players = room.players.slice();
+      var playerIndex;
+
+      // The player who left
+      for (var i = 0; i <= players; i++) {
+        if (players[i].name === client.character) playerIndex = i;
+      }
+
+      // Remove disconnecting player
+      players.splice(playerIndex, 1);
+
+      // Save copy of players back to the room
+      _rooms[client.roomId].players = players;
+
+      io.to(client.roomId)
+        .emit('update room state', Object.assign({}, {
+          players: room.players,
+          slots: room.slots
+        }));
+
+      io.to(client.roomId)
+        .emit('attention', client.character + ' has been disconnected');
+    }
   });
 }

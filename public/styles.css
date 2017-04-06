@@ -218,6 +218,20 @@ button:focus,
     max-width: 1100px;
   }
 
+  h1 {
+    width: 100%;
+    padding: 10px;
+    position: absolute;
+    top: 24%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(21, 20, 20, 0.80);
+  }
+
+  h1 img {
+    max-width: 200px;
+  }
+
   /* Grids */
   .small-3,
   .small-quarter {
@@ -260,7 +274,8 @@ button:focus,
     position: absolute;
     top: 0;
     left: 0;
-    background: #151414;
+    background: #151414 url('/images/waywardone.jpg') 0 0 no-repeat;
+    background-size: cover;
     transition: opacity 300ms ease-in-out;
   }
 
@@ -291,7 +306,7 @@ button:focus,
 
   .info-box {
     position: absolute;
-    top: 10px;
+    bottom: 10px;
     left: 10px;
     color: white;
     font-weight: normal;

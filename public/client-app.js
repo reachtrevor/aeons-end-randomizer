@@ -67,21 +67,32 @@
 
   socket.on('room joined', function(data) {
     window.history.replaceState({}, '', 'xwtyv')
-    $infobox.text('room: ' + data.room + ', as ' + data.character + ', ' + (data.slots - data.players.length) + ' slots of ' + data.slots + ' remaining');
-
-    console.log('room joined: ', data)
 
     // Show correct state
     $('.is-joining, .is-showing').removeClass('is-joining, .is-showing');
     $room.addClass('is-showing')
   });
 
+  socket.on('update room stats', function(data) {
+    $infobox.text('room: ' + data.room + ', as ' + data.character + ', ' + (data.slots - data.players.length) + ' slots of ' + data.slots + ' remaining');
+  });
+
   socket.on('err', function(data) {
-    $notify_box.addClass('is-showing');
+    $notify_box.addClass('is-showing notification--error');
     $notify_box.text(data);
+
     setTimeout(function() {
       $notify_box.removeClass('is-showing');
     }, 4000);
   });
+
+  socket.on('attention', function(data) {
+    $notify_box.addClass('is-showing notification--error');
+    $notify_box.text(data);
+
+    setTimeout(function() {
+      $notify_box.removeClass('is-showing');
+    }, 4000);
+  })
 
 })(jQuery);
