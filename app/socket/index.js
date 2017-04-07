@@ -7,6 +7,9 @@ module.exports = function handleIO(client) {
 
   // Listen for when someone creates a room
   client.on('create room', function createRoom(data) {
+
+    console.log(data);
+
     var roomId = 'xwtyv';
     _rooms[roomId] = {
       players: [],

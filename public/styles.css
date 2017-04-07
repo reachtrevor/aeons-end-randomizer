@@ -9,12 +9,13 @@
 
 html {
   height: 100%;
-  background: #151414;
+  background: #151414 url('/images/waywardone.jpg') 0 0 no-repeat;
+  background-size: cover;
 }
 
 body {
   margin: 0;
-  color: #333;
+  color: white;
   font-family: 'Roboto', 'Helvetica', sans-serif;
   font-weight: 300;
   font-size: 14px;
@@ -53,7 +54,7 @@ body {
 
 h1, h2, h3, h4 {
   font-weight: 400;
-  color: #555;
+  color: white;
 }
 
 label {
@@ -266,35 +267,21 @@ button:focus,
     width: calc(100% - 10px);
   }
 
-  .login,
-  .room,
-  .join-room {
+  .screen {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    background: #151414 url('/images/waywardone.jpg') 0 0 no-repeat;
-    background-size: cover;
+    background: rgba(21, 20, 20, 0.35);
     transition: opacity 300ms ease-in-out;
+    opacity: 0;
+    z-index: -1;
   }
 
-  .login.is-showing,
-  .room.is-showing,
-  .join-room.is-showing {
+  .screen.is-showing {
     opacity: 1;
     z-index: 999;
-  }
-
-  .login {
-    opacity: 0;
-    z-index: -999;
-  }
-
-  .room,
-  .join-room {
-    opacity: 0;
-    z-index: 1;
   }
 
   .login-content {
@@ -302,14 +289,6 @@ button:focus,
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-
-  .info-box {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    color: white;
-    font-weight: normal;
   }
 }
 

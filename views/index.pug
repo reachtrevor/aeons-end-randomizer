@@ -2,47 +2,72 @@ extends ./_shell
 
 block Body
 
-  //- Page to create a room
-  section.login
-    h1.mtn.align-center: img(src="/images/aeons-end.png")
-    div.login-content
-      h2 Create a Room
+  div#app
 
-      label.new-line.align-left
-        | Character
-        select(name="character")
-          option(value="") -- Choose --
-          option(value="liza") Liza
-          option(value="lydia") Lydia
-          option(value="matt") Matt
-          option(value="zargoth") Zargoth
-      label.new-line.align-left
-        span.player-count-label Player Count
-        span.player-count-number 3
-        div.player-count-buttons.mrm
-          i.fa.fa-caret-up
-          i.fa.fa-caret-down
-        input(type="number", name="slots", value="3", hidden)
-      button.mtl(id="create-button", type="submit") Create Room
+    //- Manually join a room with url code
+    //- section.screen.join-room
+
+    //- Manually join a room with url code
+    section.screen.create-room(:class="(currentScreen === 'create') ? 'is-showing' : ''")
+      h1.mtn.align-center: img(src="/images/aeons-end.png")
+      div.login-content
+
+        label.new-line.align-left
+          | Character
+          select(@change="handleCharacterChange")
+            option(disabled selected value) -- Select --
+            option(v-for="item in characters", :value="item.value") {{ item.label }}
+        label.new-line.align-left
+          span.player-count-label Player Count
+          span.player-count-number 3
+          div.player-count-buttons.mrm
+            i.fa.fa-caret-up
+            i.fa.fa-caret-down
+          input(type="number", name="slots", value="3", hidden)
+        button.mtl(@click="handleCreateRoom") Create Room
+
+  //- Page to create a room
+  //- section.login
+  //-   h1.mtn.align-center: img(src="/images/aeons-end.png")
+  //-   div.login-content
+  //-     h2 Create a Room
+
+  //-     label.new-line.align-left
+  //-       | Character
+  //-       select(name="character")
+  //-         option(value="") -- Choose --
+  //-         option(value="liza") Liza
+  //-         option(value="lydia") Lydia
+  //-         option(value="matt") Matt
+  //-         option(value="zargoth") Zargoth
+  //-     label.new-line.align-left
+  //-       span.player-count-label Player Count
+  //-       span.player-count-number 3
+  //-       div.player-count-buttons.mrm
+  //-         i.fa.fa-caret-up
+  //-         i.fa.fa-caret-down
+  //-       input(type="number", name="slots", value="3", hidden)
+  //-     button.mtl(id="create-button", type="submit") Create Room
 
   //- Manual Join Room flow
-  section.join-room
-    div.login-content.align-center
-      label.new-line
-        | Select Character
-        select(name="join-character")
-          option(value="") -- Choose --
-          option(value="liza") Liza
-          option(value="lydia") Lydia
-          option(value="matt") Matt
-          option(value="zargoth") Zargoth
+  //- section.join-room
+  //-   div.login-content.align-center
+  //-     label.new-line
+  //-       | Select Character
+  //-       select(name="join-character")
+  //-         option(value="") -- Choose --
+  //-         option(value="liza") Liza
+  //-         option(value="lydia") Lydia
+  //-         option(value="matt") Matt
+  //-         option(value="zargoth") Zargoth
 
   //- Actual Room
-  section.room
-    span.info-box room:
-    div.wrapper
+  //- section.room
+  //-   span.info-box room:
+  //-   div.wrapper
 
   div#notify.notification--error
 block Footer
+  script(src="https://unpkg.com/vue@2.2.6")
   script(src="/socket.io/socket.io.js")
   script(src="client-app.js")

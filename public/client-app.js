@@ -7,6 +7,17 @@
   var has_room_id = pathname.length > 1;
   var _room;
 
+  var characterData = [{
+    label: 'Liza',
+    value: 'liza'
+  }, {
+    label: 'Mineth',
+    value: 'mineth'
+  }, {
+    label: 'Norma',
+    value: 'norma'
+  }];
+
   // Page variables
   var $login = $('.login');
   var $room = $('.room');
@@ -94,5 +105,55 @@
       $notify_box.removeClass('is-showing');
     }, 4000);
   })
+
+
+  Vue.component('toast', {
+    template: '<aside :class="toastClass">{{toastMessage}}</aside>',
+  })
+
+  // Vue.component('html-select', {
+  //   props: ['list'],
+
+  //   data: function() {
+  //     return {
+  //       current: ''
+  //     };
+  //   },
+
+  //   methods: {
+  //     handleChange: function(event) {
+  //       this.current = event.target.value;
+  //     }
+  //   },
+
+  //   template: (
+  //     '<select @change="handleChange">'+
+  //       '<option v-for="item in list" :value="item.value">{{item.label}}</option>'+
+  //     '</select>'
+  //   )
+  // });
+
+  var app = new Vue({
+    el: '#app',
+
+    data: {
+      characters: characterData,
+      character: '',
+      slots: 3,
+      currentScreen: 'create'
+    },
+
+    methods: {
+      handleCharacterChange(event) {
+        this.character = event.target.value;
+      },
+      handleCreateRoom() {
+        socket.emit('create room', {
+          character: this.character,
+          slots: this.slots
+        });
+      }
+    }
+  });
 
 })(jQuery);
