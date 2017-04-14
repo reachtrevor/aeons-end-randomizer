@@ -7,41 +7,57 @@ module.exports = function handleIO(client) {
 
   // Listen for when someone creates a room
   client.on('create room', function createRoom(data) {
-
-    console.log(data);
-
     var roomId = 'xwtyv';
     _rooms[roomId] = {
       players: [],
       slots: data.slots
     };
-    client.emit('room created', { room: roomId });
+    client.emit('room created', roomId);
   });
 
+  // Listen for when someone tries to joing the room
   client.on('join room', function joinRoom(data) {
-    var roomId = data.room;
+    var roomId = data.id;
+    var character = data.character;
 
+    // Room doesn't exist
     if (!_rooms[roomId]) {
-      client.emit('err', 'room ' + roomId + ' does not exist');
+      client.emit('err', {
+        code: '404',
+        msg: 'There is no room by that the id: ' + roomId
+      });
+      return;
+    }
+
+    // User didn't pick a character
+    if (!data.character) {
+      client.emit('silent err', {
+        code: '201',
+        msg: 'No character specified when attempting to join room'
+      });
       return;
     }
 
     var slots = _rooms[roomId].slots;
     var players = _rooms[roomId].players;
 
-    // Are there available slots
-    if (players.length < slots) {
-      _rooms[roomId].players.push({
-        name: data.character,
-        player_number: players.length + 1
+    // Room is full
+    if (players.length >= slots) {
+      client.emit('err', {
+        code: 'full',
+        msg: 'Room ' + roomId + ' is full',
       });
-    } else {
-      client.emit('err', 'sorry, room is full');
       return;
     }
 
+    _rooms[roomId].players.push({
+      character: data.character,
+      player_number: players.length + 1
+    });
+
     // Finally... join the room for real
     client.roomId = roomId;
+    client.character = data.character;
     client.join(roomId, function() {
       var room = Object.assign({}, data, {
         players: players,
@@ -49,7 +65,7 @@ module.exports = function handleIO(client) {
       });
 
       // Notifiy those in the room that someone joined
-      io.to(roomId).emit('update room stats', room);
+      // io.to(roomId).emit('update room stats', room);
       io.to(roomId).emit('room joined', room);
     });
   });
@@ -63,7 +79,7 @@ module.exports = function handleIO(client) {
       .emit('player turn', data.character);
 
     // Tell current player it's their turn
-    client.emit('attention', 'It\'s your turn');
+    // client.emit('attention', 'It\'s your turn');
   });
 
   client.on('disconnect', function() {

@@ -4,11 +4,15 @@ block Body
 
   div#app
 
-    //- Manually join a room with url code
-    //- section.screen.join-room
+    //- Pick play style
+    section.screen(:class="isShowing('play-mode')")
+      div.login-content.align-center
+        p Are you playing in person (local) or over video chat (remote)?
+        button.new-line.float-center(@click="switchScreen('local-play')") Local Play
+        button.new-line.float-center.mtl(@click="switchScreen('create-room')") Remote Play
 
-    //- Manually join a room with url code
-    section.screen.create-room(:class="(currentScreen === 'create') ? 'is-showing' : ''")
+    //- Remote Create
+    section.screen(:class="isShowing('create-room')")
       h1.mtn.align-center: img(src="/images/aeons-end.png")
       div.login-content
 
@@ -19,54 +23,46 @@ block Body
             option(v-for="item in characters", :value="item.value") {{ item.label }}
         label.new-line.align-left
           span.player-count-label Player Count
-          span.player-count-number 3
+          span.player-count-number {{ slots }}
           div.player-count-buttons.mrm
-            i.fa.fa-caret-up
-            i.fa.fa-caret-down
+            i.fa.fa-caret-up(@click="increasePlayers")
+            i.fa.fa-caret-down(@click="decreasePlayers")
           input(type="number", name="slots", value="3", hidden)
         button.mtl(@click="handleCreateRoom") Create Room
 
-  //- Page to create a room
-  //- section.login
-  //-   h1.mtn.align-center: img(src="/images/aeons-end.png")
-  //-   div.login-content
-  //-     h2 Create a Room
+    //- Remote Join via URL
+    section.screen(:class="isShowing('join-room')")
+      div.login-content.align-center
+        label.new-line
+          | Select Character
+          select(@change="handleCharacterChange")
+              option(disabled selected value) -- Select --
+              option(v-for="item in characters", :value="item.value") {{ item.label }}
+        button.new-line.float-center(@click="joinRoom") Join Room
 
-  //-     label.new-line.align-left
-  //-       | Character
-  //-       select(name="character")
-  //-         option(value="") -- Choose --
-  //-         option(value="liza") Liza
-  //-         option(value="lydia") Lydia
-  //-         option(value="matt") Matt
-  //-         option(value="zargoth") Zargoth
-  //-     label.new-line.align-left
-  //-       span.player-count-label Player Count
-  //-       span.player-count-number 3
-  //-       div.player-count-buttons.mrm
-  //-         i.fa.fa-caret-up
-  //-         i.fa.fa-caret-down
-  //-       input(type="number", name="slots", value="3", hidden)
-  //-     button.mtl(id="create-button", type="submit") Create Room
+    //- Remote Play
+    section.screen(:class="isShowing('remote-play')")
+      div.login-content
+        h2 Remote Play
 
-  //- Manual Join Room flow
-  //- section.join-room
-  //-   div.login-content.align-center
-  //-     label.new-line
-  //-       | Select Character
-  //-       select(name="join-character")
-  //-         option(value="") -- Choose --
-  //-         option(value="liza") Liza
-  //-         option(value="lydia") Lydia
-  //-         option(value="matt") Matt
-  //-         option(value="zargoth") Zargoth
+        button.new-line(@click="startGame", :disabled="room.slots !== room.players.length ? true : false") Start Game
+        button.new-line(@click="switchScreen('play-mode')") Back
 
-  //- Actual Room
-  //- section.room
-  //-   span.info-box room:
-  //-   div.wrapper
+      div.room-stats
+        ul.unstyled
+          li {{ room.id }}
+          li {{ availableSlotsText }}
+          li {{ currentCharactersText }}
 
-  div#notify.notification--error
+    //- Local Play
+    section.screen.local-play(:class="isShowing('local-play')")
+      div.login-content.align-center
+        h2 Local Play
+        button.new-line.float-center(@click="switchScreen('play-mode')") Back
+
+    toast(:show="toast.show", :type="toast.type", @expire-toast="removeNotification")
+      | {{ toast.message }}
+
 block Footer
   script(src="https://unpkg.com/vue@2.2.6")
   script(src="/socket.io/socket.io.js")
